@@ -20,48 +20,53 @@ const InfiniteCarousel = ({ direction = "left" }: InfiniteCarouselProps) => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
-    let scrollAmount = 0;
-    const speed = direction === "left" ? 1 : -1;
+    let animationFrameId: number;
+    let scrollPosition = 0;
+    const speed = direction === "left" ? 0.5 : -0.5;
 
-    const scroll = () => {
-      scrollAmount += speed;
+    const animate = () => {
+      scrollPosition += speed;
+      
+      const itemWidth = 208; // 192px (w-48) + 16px (gap-4)
+      const totalWidth = itemWidth * movies.length;
       
       if (direction === "left") {
-        if (scrollAmount >= scrollContainer.scrollWidth / 2) {
-          scrollAmount = 0;
+        if (scrollPosition >= totalWidth) {
+          scrollPosition = 0;
         }
       } else {
-        if (scrollAmount <= -scrollContainer.scrollWidth / 2) {
-          scrollAmount = 0;
+        if (scrollPosition <= -totalWidth) {
+          scrollPosition = 0;
         }
       }
       
-      scrollContainer.style.transform = `translateX(${-scrollAmount}px)`;
+      scrollContainer.style.transform = `translateX(${-scrollPosition}px)`;
+      animationFrameId = requestAnimationFrame(animate);
     };
 
-    const intervalId = setInterval(scroll, 20);
+    animationFrameId = requestAnimationFrame(animate);
 
-    return () => clearInterval(intervalId);
-  }, [direction]);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [direction, movies.length]);
 
-  // Duplicar os itens para criar o efeito infinito
-  const duplicatedMovies = [...movies, ...movies, ...movies];
+  // Duplicar 4 vezes para garantir continuidade (32 capas)
+  const duplicatedMovies = [...movies, ...movies, ...movies, ...movies];
 
   return (
     <div className="overflow-hidden py-8">
       <div
         ref={scrollRef}
         className="flex gap-4"
-        style={{ width: "max-content" }}
+        style={{ width: "max-content", willChange: "transform" }}
       >
         {duplicatedMovies.map((movie, index) => (
           <div
             key={index}
-            className="flex-shrink-0 w-48 h-72 rounded-lg overflow-hidden hover:scale-105 transition-smooth"
+            className="flex-shrink-0 w-48 h-72 rounded-lg overflow-hidden hover:scale-105 transition-smooth shadow-lg"
           >
             <img
               src={movie}
-              alt={`Movie ${index + 1}`}
+              alt={`Movie ${(index % movies.length) + 1}`}
               className="w-full h-full object-cover"
             />
           </div>
