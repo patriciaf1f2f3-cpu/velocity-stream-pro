@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
+import goldflixLogo from "@/assets/goldflix-logo.jpg";
 
 const Header = () => {
   const scrollToPlans = () => {
@@ -10,9 +10,8 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Play className="h-8 w-8 text-primary fill-primary" />
-          <span className="text-xl font-bold">StreamPremium</span>
+        <div className="flex items-center gap-3">
+          <img src={goldflixLogo} alt="GOLDFLIX" className="h-12 w-auto" />
         </div>
         
         <Button 
